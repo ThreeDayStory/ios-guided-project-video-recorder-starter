@@ -45,16 +45,24 @@ class CameraViewController: UIViewController {
 
     private func setUpCamera() {
         let camera = bestCamera()
+        let microphone = bestMicrophone()
         
         captureSession.beginConfiguration()
         
         guard let cameraInput = try? AVCaptureDeviceInput(device: camera) else {
             preconditionFailure("Can't create an input from the camera, but we should do something better than crashing!")
         }
+        guard let microphoneInput = try? AVCaptureDeviceInput(device: microphone) else {
+            preconditionFailure("Can't create an input from the microphone, but we should do something better than crashing!")
+        }
         guard captureSession.canAddInput(cameraInput) else {
             preconditionFailure("This session can't handle this type of input: \(cameraInput)")
         }
+        guard captureSession.canAddInput(microphoneInput) else {
+                 preconditionFailure("This session can't handle this type of input: \(microphoneInput)")
+        }
         captureSession.addInput(cameraInput)
+        captureSession.addInput(microphoneInput)
         
         if captureSession.canSetSessionPreset(.hd1920x1080) {
             captureSession.sessionPreset = .hd1920x1080
@@ -78,6 +86,14 @@ class CameraViewController: UIViewController {
         }
         
         preconditionFailure("No cameras on device matched the specs that we need.")
+    }
+    
+    private func bestMicrophone() -> AVCaptureDevice {
+        if let device = AVCaptureDevice.default(for: .audio) {
+            return device
+        }
+        
+        preconditionFailure("No microphones on device matched the specs that we need.")
     }
     
     override func viewDidAppear(_ animated: Bool) {
