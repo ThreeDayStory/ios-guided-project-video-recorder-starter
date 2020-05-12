@@ -24,7 +24,22 @@ class CameraViewController: UIViewController {
 		// Resize camera preview to fill the entire screen
 		cameraView.videoPlayerLayer.videoGravity = .resizeAspectFill
         setUpCamera()
+        let tapgesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
+        view.addGestureRecognizer(tapgesture)
 	}
+    
+    @IBAction func handleTapGesture(_ sender: UITapGestureRecognizer) {
+        if sender.state == .ended {
+            playRecording()
+        }
+    }
+    
+    func playRecording() {
+        if let player = player {
+            player.seek(to: CMTime(seconds: 0, preferredTimescale: 600)) // N / D, D = 600 gives good resolution in regards to time
+            player.play()
+        }
+    }
     
     func playMovie(url: URL) {
         player = AVPlayer(url: url)
